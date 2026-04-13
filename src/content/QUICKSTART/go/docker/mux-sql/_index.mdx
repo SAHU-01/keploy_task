@@ -1,0 +1,97 @@
+---
+title: "Mux + Postgres Quickstart"
+description: "Test Keploy integration using Mux and Postgres in a Docker environment."
+---
+
+<HeaderSection title="Mux + Postgres Quickstart" />
+
+Explore how Keploy captures binary Postgres traffic and generates automated tests for a Product Catalog app.
+
+<Callout title="Prerequisite">
+  Don’t have Keploy installed yet? [Go to Installation Guide](https://keploy.io/docs/install)
+</Callout>
+
+<Step number={1} title="Clone the Sample App">
+  Clone the repository and install dependencies to get started with the Mux-SQL sample.
+
+  <CodeGroup>
+    <CodeBlock label="Terminal" filename="terminal">
+    ```bash
+    git clone https://github.com/keploy/samples-go.git
+    cd samples-go/mux-sql
+    go mod download
+    ```
+    </CodeBlock>
+  </CodeGroup>
+</Step>
+
+<Step number={2} title="Configure for Docker">
+  <CodeTrigger file="main.go" lines={[12, 16]}>
+    Open `main.go`. We must update the database host from `localhost` to `postgres` so the app can find the database container inside the Docker network.
+  </CodeTrigger>
+
+  <CodeGroup>
+    <CodeBlock label="main.go" filename="main.go">
+    ```go
+    // Inside func main() initialization:
+    // Change localhost to postgres
+    db, err := sql.Open("postgres", "host=postgres port=5432 user=postgres password=postgres dbname=postgres sslmode=disable")
+    if err != nil {
+        log.Fatal(err)
+    }
+    ```
+    </CodeBlock>
+  </CodeGroup>
+</Step>
+
+<Step number={3} title="Lights, Camera, Record! 🎥">
+  Start Keploy in record mode. Use the `-c` flag for your run command and `--container-name` to tell Keploy which container to intercept.
+
+  ```bash
+  keploy record -c "docker compose up" --container-name "muxSqlApp" --build-delay 50
+  ```
+</Step>
+
+<Step number={4} title="Generate Test Cases">
+  Open a new terminal and make an API call. Keploy will capture the request and the database response.
+
+  <CodeGroup>
+    <CodeBlock label="Terminal" filename="terminal">
+    ```bash
+    curl --request POST \
+      --url http://localhost:8010/product \
+      --header 'content-type: application/json' \
+      --data '{"name":"Bubbles", "price": 123}'
+    ```
+    </CodeBlock>
+
+    <CodeBlock label="test-1.yml" filename="test-1.yml">
+    <CodeTrigger file="test-1.yml" lines={[1, 10]}>
+    ```yaml
+    # Keploy generated this!
+    version: api.keploy.io/v1beta2
+    kind: Http
+    name: test-1
+    spec:
+      req:
+        method: POST
+        url: http://localhost:8010/product
+    ```
+    </CodeTrigger>
+    </CodeBlock>
+  </CodeGroup>
+</Step>
+
+<Step number={5} title="Run the Tests 🧪">
+  Stop the recording terminal and run the test command. We add a `--delay` to give Postgres time to breathe before the tests start.
+
+  ```bash
+  keploy test -c "docker compose up" --container-name "muxSqlApp" --delay 10
+  ```
+</Step>
+
+## Troubleshooting
+
+<Alert variant="destructive">
+  Getting an EOF or Connection Error? Ensure your `main.go` host is set to `postgres` and that your Docker containers are healthy. Run `docker ps` to verify.
+</Alert>

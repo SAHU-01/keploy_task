@@ -7,6 +7,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Sidebar } from "./Sidebar";
 import { ThemeToggle } from "./ThemeToggle";
+import { Navbar } from "./Navbar";
 import { ScrollArea } from "./ui/ScrollArea";
 import { useTutorialStore } from "@/features/keploy-tutorial/store/useTutorialStore";
 import { Menu, X } from "lucide-react";
@@ -44,24 +45,12 @@ export default function StripeLayout({
 
   return (
     <div className={cn(
-      "h-screen overflow-hidden bg-background text-foreground",
+      "h-screen flex flex-col bg-background text-foreground",
       className
     )}>
-      {/* Mobile Header */}
-      <header className="flex md:hidden items-center justify-between px-4 py-3 border-b border-border bg-sidebar z-50">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded bg-[#FF914D]" />
-          <span className="font-bold text-lg tracking-tight">Keploy</span>
-        </div>
-        <button
-          onClick={() => toggleMobileSidebar()}
-          className="p-2 rounded-md hover:bg-muted transition-colors"
-        >
-          {isMobileSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
-      </header>
+      <Navbar />
 
-      <div className="flex h-full w-full relative">
+      <div className="flex flex-1 w-full relative overflow-hidden">
         {/* Mobile Sidebar Overlay */}
         <AnimatePresence>
           {isMobileSidebarOpen && (
@@ -97,7 +86,7 @@ export default function StripeLayout({
         <aside 
           className={cn(
             "hidden md:block h-full border-r border-border bg-sidebar transition-all duration-300 overflow-y-auto",
-            isSidebarCollapsed ? "w-[64px]" : "w-[260px]"
+            isSidebarCollapsed ? "w-[64px]" : "w-[240px]"
           )}
         >
           <div className="p-4 h-full">
@@ -107,17 +96,13 @@ export default function StripeLayout({
 
         {/* Main Content Column */}
         <main className="flex-1 h-full relative overflow-hidden flex flex-col bg-background min-w-0">
-          <div className="absolute top-6 right-6 z-40 hidden md:block">
-            <ThemeToggle />
-          </div>
-          
           <ScrollArea className="flex-1">
-            <div className="flex justify-center p-6 md:p-12 min-h-full pb-24 md:pb-12">
+            <div className="flex justify-center p-6 md:p-12 lg:p-16 min-h-full pb-24 md:pb-12">
               <motion.div
                 initial="hidden"
                 animate="visible"
                 variants={fadeInUp}
-                className="w-full max-w-[800px] min-w-0"
+                className="w-full max-w-[1000px] min-w-0"
               >
                 {children}
               </motion.div>
@@ -126,11 +111,12 @@ export default function StripeLayout({
         </main>
 
         {/* Sticky Code Pane */}
-        <aside className="hidden lg:flex w-[440px] h-full border-l border-border bg-sidebar overflow-hidden flex flex-col min-w-0 shrink-0">
+        <aside className="hidden lg:flex w-[480px] h-full border-l border-border bg-sidebar/30 backdrop-blur-[2px] overflow-hidden flex flex-col min-w-0 shrink-0">
+          <div className="absolute top-0 left-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-border to-transparent opacity-30" />
           <ScrollArea className="flex-1">
-            <div className="p-6 min-h-full">
+            <div className="p-0 h-full">
               {code || (
-                <div className="glass p-6 min-h-[400px]">
+                <div className="glass m-6 p-6 min-h-[400px]">
                   {/* ... mock content ... */}
                 </div>
               )}

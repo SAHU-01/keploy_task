@@ -47,37 +47,33 @@ export function Sidebar() {
       <div className="flex flex-col items-center py-6 h-full">
         <button
           onClick={toggleSidebar}
-          className="p-2 rounded-md text-zinc-400 hover:text-[#FF914D] hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all mb-8"
+          className="p-2 rounded-md text-zinc-400 hover:text-[#FF914D] hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all mb-8 active:scale-90"
         >
           <PanelLeftOpen className="h-5 w-5" />
         </button>
-        <div className="w-[2px] h-32 bg-[#FF914D] rounded-full opacity-50" />
+        <div className="w-[2px] h-32 bg-gradient-to-b from-[#FF914D] to-transparent rounded-full opacity-30" />
       </div>
     );
   }
 
   return (
     <div className="flex flex-col h-full">
-      <div className="mb-8 flex items-center justify-between px-3">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded bg-[#FF914D]" />
-          <span className="font-bold text-xl tracking-tight">Keploy</span>
-        </div>
+      <div className="mb-10 flex items-center justify-end px-2">
         <button
           onClick={toggleSidebar}
-          className="p-1.5 rounded-md text-zinc-400 hover:text-[#FF914D] hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all"
+          className="p-1.5 rounded-md text-zinc-400 hover:text-[#FF914D] hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all active:scale-90"
         >
           <PanelLeftClose className="h-4 w-4" />
         </button>
       </div>
 
-      <nav className="flex flex-col gap-8 w-full p-0">
+      <nav className="flex flex-col gap-9 w-full p-0">
         {navItems.map((section, idx) => (
-          <div key={idx} className="flex flex-col gap-2">
-            <h4 className="px-3 text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+          <div key={idx} className="flex flex-col gap-3">
+            <h4 className="px-3 text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em]">
               {section.title}
             </h4>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-0.5">
               {section.href ? (
                 <SidebarLink href={section.href} active={pathname === section.href}>
                   {section.title}
@@ -117,17 +113,17 @@ function SidebarLink({
     <Link
       href={href}
       className={cn(
-        "relative group flex items-center px-3 py-1.5 text-sm transition-colors duration-200",
+        "relative group flex items-center px-3 py-2 text-sm transition-all duration-200 rounded-lg mx-1",
         active
-          ? "text-[#FF914D] font-medium"
-          : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200",
+          ? "text-[#FF914D] font-semibold bg-orange-500/5"
+          : "text-zinc-600 dark:text-zinc-400 hover:text-foreground hover:bg-muted/50",
         className
       )}
     >
       {active && (
         <motion.div
           layoutId="sidebar-active"
-          className="absolute left-0 w-[2px] h-full bg-[#FF914D]"
+          className="absolute left-[-4px] w-[3px] h-3/5 rounded-full bg-[#FF914D]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
@@ -135,7 +131,7 @@ function SidebarLink({
       )}
       <span className="flex-1">{children}</span>
       {!active && (
-        <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <ChevronRight className="h-3.5 w-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 text-zinc-400" />
       )}
     </Link>
   );

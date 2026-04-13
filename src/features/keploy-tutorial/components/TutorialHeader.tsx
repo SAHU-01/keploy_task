@@ -115,13 +115,13 @@ export const TutorialHeader = () => {
   ];
 
   const quickstarts = [
-    { id: "mux-postgres", label: "Mux + Postgres" },
-    { id: "echo-sql", label: "Echo + SQL" },
-    { id: "gin-redis", label: "Gin + Redis" },
+    { id: "mux-postgres", label: "Mux + Postgres", disabled: false },
+    { id: "echo-sql", label: "Echo + SQL", disabled: true },
+    { id: "gin-redis", label: "Gin + Redis", disabled: true },
   ];
 
   return (
-    <div className="flex items-center gap-x-6 gap-y-2 py-3 border-b border-border bg-sidebar/50 backdrop-blur-sm px-4 mb-8 rounded-lg overflow-x-auto no-scrollbar">
+    <div className="sticky top-0 z-30 flex items-center gap-x-6 gap-y-2 py-3.5 border border-border bg-background/80 backdrop-blur-md px-5 mb-10 rounded-xl overflow-x-auto no-scrollbar shadow-sm shadow-black/5">
       {!isSidebarCollapsed ? (
         <>
           <HeaderSelect label="Language" value={language} options={languages} onChange={(v) => updateParam("lang", v)} />
@@ -150,7 +150,7 @@ export const TutorialHeader = () => {
             <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Quickstart:</span>
             <div className="flex gap-1.5">
               {quickstarts.map((q) => (
-                <HeaderButton key={q.id} label={q.label} isActive={currentQuickstart === q.id} onClick={() => updateParam("quickstart", q.id)} />
+                <HeaderButton key={q.id} label={q.label} isActive={currentQuickstart === q.id} disabled={q.disabled} onClick={() => updateParam("quickstart", q.id)} />
               ))}
             </div>
           </div>

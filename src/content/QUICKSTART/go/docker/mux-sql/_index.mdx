@@ -7,9 +7,14 @@ description: "Test Keploy integration using Mux and Postgres in a Docker environ
 
 Explore how Keploy captures binary Postgres traffic and generates automated tests for a Product Catalog app.
 
-<Callout title="Prerequisite">
-  Don’t have Keploy installed yet? [Go to Installation Guide](https://keploy.io/docs/install)
-</Callout>
+<Prerequisites>
+  Before diving into the integration, ensure your environment is set up for traffic interception:
+
+  *   **Keploy Binary**: Installed on your local machine.
+  *   **Docker & Docker Compose**: Installed and running.
+
+  Don't have Keploy installed yet? <span className="inline-flex items-center gap-1.5 font-semibold text-orange-500 animate-pulse transition-all"><Info className="h-4 w-4" /> [Go to Installation Guide](https://keploy.io/docs/install)</span>
+</Prerequisites>
 
 <Step number={1} title="Clone the Sample App">
   Clone the repository and install dependencies to get started with the Mux-SQL sample.
@@ -26,7 +31,7 @@ Explore how Keploy captures binary Postgres traffic and generates automated test
 </Step>
 
 <Step number={2} title="Configure for Docker">
-  <CodeTrigger file="main.go" lines={[12, 16]}>
+  <CodeTrigger file="main.go" lines={[17, 22]}>
     Open `main.go`. We must update the database host from `localhost` to `postgres` so the app can find the database container inside the Docker network.
   </CodeTrigger>
 
@@ -34,17 +39,19 @@ Explore how Keploy captures binary Postgres traffic and generates automated test
     <CodeBlock label="main.go" filename="main.go">
     ```go
     // Inside func main() initialization:
-    // Change localhost to postgres
-    db, err := sql.Open("postgres", "host=postgres port=5432 user=postgres password=postgres dbname=postgres sslmode=disable")
-    if err != nil {
-        log.Fatal(err)
-    }
+-   "localhost", // postgres host
++   "postgres", // Change localhost to postgres when using Docker
     ```
     </CodeBlock>
   </CodeGroup>
 </Step>
 
-<Step number={3} title="Lights, Camera, Record! 🎥">
+<Step number={3} title="Lights, Camera, Record!" file="test-1.yml">
+  ### Infrastructure Readiness
+  Once your containers are healthy, you should see the services networked correctly in your terminal.
+  
+  ![Service Orchestration](/assets/quickstart/go/docker/mux-sql/service-orchestration.jpeg)
+
   Start Keploy in record mode. Use the `-c` flag for your run command and `--container-name` to tell Keploy which container to intercept.
 
   ```bash
@@ -52,7 +59,7 @@ Explore how Keploy captures binary Postgres traffic and generates automated test
   ```
 </Step>
 
-<Step number={4} title="Generate Test Cases">
+<Step number={4} title="Generate Test Cases" file="test-1.yml">
   Open a new terminal and make an API call. Keploy will capture the request and the database response.
 
   <CodeGroup>
@@ -61,34 +68,74 @@ Explore how Keploy captures binary Postgres traffic and generates automated test
     curl --request POST \
       --url http://localhost:8010/product \
       --header 'content-type: application/json' \
-      --data '{"name":"Bubbles", "price": 123}'
+      --data '{
+        "name":"Bubbles",
+        "price": 123
+      }'
     ```
-    </CodeBlock>
-
-    <CodeBlock label="test-1.yml" filename="test-1.yml">
-    <CodeTrigger file="test-1.yml" lines={[1, 10]}>
-    ```yaml
-    # Keploy generated this!
-    version: api.keploy.io/v1beta2
-    kind: Http
-    name: test-1
-    spec:
-      req:
-        method: POST
-        url: http://localhost:8010/product
-    ```
-    </CodeTrigger>
     </CodeBlock>
   </CodeGroup>
+
+  You should receive a response like this:
+  ```json
+  {
+    "id": 1,
+    "name": "Bubbles",
+    "price": 123
+  }
+  ```
+
+  Woohoo! With a simple API call, you've crafted a test case with a mock! Dive into the Keploy directory and feast your eyes on the newly minted test-1.yml and mocks.yml.
+
+  ### The Generated Artifacts
+
+  <Note>
+    **1. The Test Case**
+    Keploy has now generated a new test file test-1.yml. This file contains the captured request and the expected response, including the exact body and status codes.
+
+    **2. The Mocks**
+    <CodeTrigger file="mock.yaml">
+      Alongside the test case, Keploy also captures external dependencies (like your Postgres database calls) as mocks. These are stored in mock.yaml and allow you to run tests without a live database later.
+    </CodeTrigger>
+  </Note>
+
+  <CodeTrigger file="test-2.yml">
+    ### Fetch Product from Catalog
+
+    Open a new terminal and fetch the products from the catalog:
+
+    ```bash
+    curl --request GET --url http://localhost:8010/products
+    ```
+
+    Example response:
+    ```json
+    [{"id": 1, "name": "Bubbles", "price": 123}]
+    ```
+
+    Or just type http://localhost:8010/products in your browser. Your choice!
+
+    Spotted the new test and mock files in your project? High five!
+  </CodeTrigger>
 </Step>
 
-<Step number={5} title="Run the Tests 🧪">
-  Stop the recording terminal and run the test command. We add a `--delay` to give Postgres time to breathe before the tests start.
+<Step number={5} title="Run the Tests">
+  After stopping the record terminal, execute the test suite. We add a `--delay` to give Postgres time to breathe before the tests start.
 
   ```bash
   keploy test -c "docker compose up" --container-name "muxSqlApp" --delay 10
   ```
+
+  A successful run will output the test report summary in your terminal:
+
+  ![Keploy Success Console](/assets/quickstart/go/docker/mux-sql/keploy-success-console.jpeg)
 </Step>
+
+## Wrapping it up
+
+Congrats on the journey so far! You've seen Keploy's power, flexed your coding muscles, and had a bit of fun too! Now, go out there and keep exploring, innovating, and creating! Remember, with the right tools and a sprinkle of fun, anything's possible.
+
+Happy coding!
 
 ## Troubleshooting
 

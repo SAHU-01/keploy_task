@@ -9,6 +9,8 @@ interface TutorialState {
   activeLineRange: [number, number] | null;
   isSidebarCollapsed: boolean;
   isMobileSidebarOpen: boolean;
+  rawContent: string;
+  title: string;
 
   setLanguage: (language: string) => void;
   setEnv: (env: string) => void;
@@ -17,6 +19,7 @@ interface TutorialState {
   setActiveCode: (file: string, lines?: [number, number]) => void;
   toggleSidebar: () => void;
   toggleMobileSidebar: (open?: boolean) => void;
+  setRawContent: (content: string, title: string) => void;
 }
 
 export const useTutorialStore = create<TutorialState>((set) => ({
@@ -28,6 +31,8 @@ export const useTutorialStore = create<TutorialState>((set) => ({
   activeLineRange: null,
   isSidebarCollapsed: false,
   isMobileSidebarOpen: false,
+  rawContent: "",
+  title: "",
 
   setLanguage: (language) => set({ language }),
   setEnv: (env) => set({ env }),
@@ -39,4 +44,5 @@ export const useTutorialStore = create<TutorialState>((set) => ({
   toggleMobileSidebar: (open) => set((state) => ({ 
     isMobileSidebarOpen: open !== undefined ? open : !state.isMobileSidebarOpen 
   })),
+  setRawContent: (rawContent, title) => set({ rawContent, title }),
 }));

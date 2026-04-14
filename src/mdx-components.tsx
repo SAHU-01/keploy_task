@@ -6,6 +6,7 @@ import { useTutorialStore } from "./features/keploy-tutorial/store/useTutorialSt
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Copy, Check, Info, Sparkles, FileText, FileCode } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -33,14 +34,30 @@ const HeaderSection = ({ title: propsTitle }: { title: string }) => {
   };
 
   return (
-    <div className="mb-10 border-b border-border pb-6 min-w-0">
-      <h1 className="text-4xl font-extrabold tracking-tight text-foreground truncate-none break-words mb-6">{propsTitle}</h1>
+    <div className="mb-12 min-w-0">
+      <nav className="flex items-center gap-2 text-[13px] text-zinc-500 mb-4 font-medium">
+        <span>Home</span>
+        <span className="text-zinc-300 dark:text-zinc-700">/</span>
+        <span>Quickstarts</span>
+        <span className="text-zinc-300 dark:text-zinc-700">/</span>
+        <span className="text-zinc-900 dark:text-zinc-100 font-bold">Go</span>
+      </nav>
+
+      <h1 className="text-4xl font-extrabold tracking-tight text-foreground truncate-none break-words mb-4 leading-tight">{propsTitle}</h1>
       
-      <div className="flex items-center gap-4 text-zinc-500 dark:text-zinc-400 mb-2">
-        <button className="flex items-center gap-2 text-[13px] font-medium hover:text-[#FF914D] transition-colors group">
-          <Sparkles className="h-4 w-4 text-zinc-400 group-hover:text-[#FF914D] transition-colors" />
-          Ask about this page
-        </button>
+      <div className="flex items-center gap-4 text-zinc-500 dark:text-zinc-400 mb-6">
+        <div className="relative group/tooltip flex items-center">
+          <button 
+            disabled
+            className="flex items-center gap-2 text-[13px] font-medium opacity-50 cursor-not-allowed transition-colors"
+          >
+            <Sparkles className="h-4 w-4 text-zinc-400" />
+            Ask about this page
+          </button>
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 text-white text-[10px] rounded opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            Coming soon
+          </div>
+        </div>
         <span className="text-border/60">|</span>
         <button 
           onClick={handleCopyForLLM}
@@ -58,6 +75,7 @@ const HeaderSection = ({ title: propsTitle }: { title: string }) => {
           View as Markdown
         </button>
       </div>
+      <div className="border-b border-border" />
     </div>
   );
 };
@@ -75,9 +93,21 @@ const Step = ({
   file?: string;
   lines?: [number, number];
 }) => {
-  const { activeStep, setActiveStep, setActiveCode } = useTutorialStore();
+  const { activeStep, setActiveStep, setActiveCode, searchQuery } = useTutorialStore();
   const stepRef = useRef<HTMLDivElement>(null);
   const isActive = activeStep === number;
+
+  const isCompleted = activeStep > number;
+  const isSearchMatch = React.useMemo(() => {
+    if (!searchQuery) return false;
+    const query = searchQuery.toLowerCase();
+    
+    if (title.toLowerCase().includes(query)) return true;
+    const childrenString = React.Children.toArray(children).join("").toLowerCase();
+    if (childrenString.includes(query)) return true;
+    
+    return false;
+  }, [searchQuery, title, children]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -91,7 +121,6 @@ const Step = ({
       },
       { 
         threshold: 0,
-        // Trigger precisely when the step crosses a line 20% from the top of the screen
         rootMargin: "-20% 0px -79% 0px"
       }
     );
@@ -104,7 +133,14 @@ const Step = ({
   }, [number, setActiveStep, setActiveCode, file, JSON.stringify(lines)]);
 
   return (
-    <div ref={stepRef} className="flex gap-6 mb-12 relative group min-w-0 overflow-visible">
+    <div 
+      ref={stepRef} 
+      onClick={() => setActiveStep(number)}
+      className={cn(
+        "flex gap-6 mb-16 relative group cursor-pointer min-w-0 overflow-visible transition-all duration-500 rounded-xl p-6 -mx-6",
+        isSearchMatch && !isActive && "ring-2 ring-accent/50 bg-accent/5 animate-pulse"
+      )}
+    >
       {/* Stripe-style active line highlight */}
       <div className={cn(
         "absolute -left-[32px] top-0 bottom-0 w-[2px] transition-all duration-300",
@@ -113,21 +149,31 @@ const Step = ({
 
       <div className="flex flex-col items-center shrink-0 w-10 overflow-visible">
         <div className={cn(
-          "w-9 h-9 rounded-full border-2 flex items-center justify-center font-bold text-sm z-10 transition-all duration-300",
-          isActive 
-            ? "border-[#FF914D] bg-[#FF914D] text-white shadow-[0_0_20px_rgba(255,145,77,0.4)] scale-110" 
+          "w-9 h-9 rounded-full border-2 flex items-center justify-center font-bold text-sm z-10 transition-all duration-500",
+          (isActive || isCompleted)
+            ? "border-[#FF914D] bg-[#FF914D] text-white shadow-[0_0_20px_rgba(255,145,77,0.4)]" 
             : "border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-600 bg-background group-hover:border-zinc-300 dark:group-hover:border-zinc-700"
         )}>
           {number}
         </div>
-        <div className="w-[1px] h-full bg-border absolute top-9 group-last:hidden" />
+        <div className={cn(
+          "w-[2px] h-full absolute top-9 group-last:hidden transition-colors duration-500",
+          isCompleted ? "bg-[#FF914D]" : "bg-border"
+        )} />
       </div>
       <div className={cn(
-        "flex-1 pb-4 min-w-0 transition-all duration-300",
-        isActive ? "opacity-100" : "opacity-30"
+        "flex-1 min-w-0 transition-all duration-500",
+        isActive ? "opacity-100" : "opacity-40 hover:opacity-100"
       )}>
-        <h2 className="text-xl font-bold text-foreground mb-4 mt-0 break-words">{title}</h2>
-        <div className="text-muted-foreground leading-relaxed break-words">{children}</div>
+        <h2 className={cn(
+          "text-xl font-bold mb-4 mt-0 transition-colors duration-300",
+          isActive ? "text-foreground" : "text-muted-foreground"
+        )}>
+          {title}
+        </h2>
+        <div className="text-muted-foreground leading-relaxed break-words">
+          {children}
+        </div>
       </div>
     </div>
   );

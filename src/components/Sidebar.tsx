@@ -18,23 +18,26 @@ interface NavItem {
   href?: string;
   items?: NavItem[];
   icon?: React.ReactNode;
+  disabled?: boolean;
 }
 
 const navItems: NavItem[] = [
   {
     title: "Getting Started",
     href: "/docs/getting-started",
+    disabled: true,
   },
   {
     title: "Quickstarts",
     items: [
-      { title: "Go", href: "/quickstart/go/docker/mux-sql" },
-      { title: "Python", href: "/quickstart/python/docker/fastapi" },
+      { title: "Go", href: "/quickstart/go/docker/mux-sql", disabled: false },
+      { title: "Python", href: "/quickstart/python/docker/fastapi", disabled: true },
     ],
   },
   {
     title: "Reference",
     href: "/docs/reference",
+    disabled: true,
   },
 ];
 
@@ -44,7 +47,7 @@ export function Sidebar() {
 
   if (isSidebarCollapsed) {
     return (
-      <div className="flex flex-col items-center py-6 h-full">
+      <div className="flex flex-col items-center py-6 h-full font-sans">
         <button
           onClick={toggleSidebar}
           className="p-2 rounded-md text-zinc-400 hover:text-[#FF914D] hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all mb-8 active:scale-90"
@@ -57,7 +60,7 @@ export function Sidebar() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full font-sans">
       <div className="mb-10 flex items-center justify-end px-2">
         <button
           onClick={toggleSidebar}
@@ -75,7 +78,11 @@ export function Sidebar() {
             </h4>
             <div className="flex flex-col gap-0.5">
               {section.href ? (
-                <SidebarLink href={section.href} active={pathname === section.href}>
+                <SidebarLink 
+                  href={section.href} 
+                  active={pathname === section.href}
+                  disabled={section.disabled}
+                >
                   {section.title}
                 </SidebarLink>
               ) : (
@@ -84,6 +91,7 @@ export function Sidebar() {
                     key={i}
                     href={item.href!}
                     active={pathname === item.href}
+                    disabled={item.disabled}
                     className="pl-6"
                   >
                     {item.title}
@@ -102,13 +110,29 @@ function SidebarLink({
   href,
   children,
   active,
+  disabled,
   className,
 }: {
   href: string;
   children: React.ReactNode;
   active?: boolean;
+  disabled?: boolean;
   className?: string;
 }) {
+  if (disabled) {
+    return (
+      <div
+        className={cn(
+          "relative flex items-center px-3 py-2 text-sm text-zinc-300 dark:text-zinc-600 cursor-not-allowed mx-1",
+          className
+        )}
+      >
+        <span className="flex-1">{children}</span>
+        <span className="text-[9px] font-bold uppercase tracking-tighter opacity-40 ml-2 border border-zinc-200 dark:border-zinc-800 px-1 rounded">Soon</span>
+      </div>
+    );
+  }
+
   return (
     <Link
       href={href}

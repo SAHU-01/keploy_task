@@ -2,10 +2,11 @@
 
 import React from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Github, Slack, Search, Command, Menu } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Github, Slack, Search, Menu, Loader2, ExternalLink } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { useTutorialStore } from "@/features/keploy-tutorial/store/useTutorialStore";
+import { useSearch } from "@/features/keploy-tutorial/hooks/useSearch";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -14,7 +15,9 @@ function cn(...inputs: ClassValue[]) {
 }
 
 export function Navbar() {
-  const { toggleMobileSidebar } = useTutorialStore();
+  const { toggleMobileSidebar, setSearchQuery, searchQuery } = useTutorialStore();
+  const { results, isLoading } = useSearch(searchQuery);
+  const [isFocused, setIsFocused] = React.useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
@@ -41,14 +44,84 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          {/* Professional Search Bar */}
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 border border-border text-muted-foreground hover:bg-muted hover:border-zinc-300 dark:hover:border-zinc-700 transition-all cursor-pointer w-40 md:w-64 group">
-            <Search className="h-4 w-4 group-hover:text-foreground transition-colors" />
-            <span className="text-sm flex-1">Search docs...</span>
-            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded border border-border bg-background text-[10px] font-medium shadow-sm">
-              <Command className="h-2.5 w-2.5" />
-              <span>K</span>
+          {/* Pill Search Bar */}
+          <div className="relative">
+            <div className="hidden sm:flex items-center gap-3 px-3 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 text-zinc-400 focus-within:border-accent dark:focus-within:border-accent focus-within:ring-1 focus-within:ring-accent/20 transition-all w-40 md:w-64 group shadow-sm">
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin text-accent" />
+              ) : (
+                <Search className="h-4 w-4 group-hover:text-zinc-500 dark:group-hover:text-zinc-300 transition-colors" />
+              )}
+              <input 
+                type="text"
+                placeholder="Search"
+                value={searchQuery}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-transparent border-none outline-none text-sm flex-1 font-medium text-foreground placeholder:text-zinc-400"
+              />
+              <div className={cn(
+                "flex items-center gap-1 transition-opacity",
+                searchQuery ? "opacity-0" : "opacity-60 group-focus-within:opacity-0"
+              )}>
+                <div className="flex items-center justify-center h-5 w-5 rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-[10px] font-bold shadow-sm">
+                  ⌘
+                </div>
+                <div className="flex items-center justify-center h-5 w-5 rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-[10px] font-bold shadow-sm">
+                  K
+                </div>
+              </div>
             </div>
+
+            {/* Search Dropdown */}
+            <AnimatePresence>
+              {isFocused && (searchQuery || results.length > 0) && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] z-[100] overflow-hidden"
+                >
+                  <div className="p-2">
+                    <div className="px-3 py-2 text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em] border-b border-zinc-100 dark:border-zinc-800 mb-1">
+                      {results.length > 0 ? "Search Results" : "Quick Actions"}
+                    </div>
+                    
+                    {results.length > 0 ? (
+                      <div className="flex flex-col gap-0.5">
+                        {results.map((result) => (
+                          <Link
+                            key={result.id}
+                            href={result.url}
+                            className="flex items-center justify-between px-3 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all group/item"
+                          >
+                            <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover/item:text-accent transition-colors truncate">
+                              {result.title}
+                            </span>
+                            <ExternalLink className="h-3.5 w-3.5 text-zinc-400 opacity-0 group-hover/item:opacity-100 transition-all" />
+                          </Link>
+                        ))}
+                      </div>
+                    ) : searchQuery ? (
+                      <div className="px-3 py-10 text-center">
+                        <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-1">No results found</p>
+                        <p className="text-xs text-zinc-500">We couldn't find anything matching "{searchQuery}"</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-1 px-3 py-4">
+                        <p className="text-xs font-medium text-zinc-500 italic">Try searching for:</p>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          <span className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded text-[10px] font-bold text-zinc-600 dark:text-zinc-400">Docker</span>
+                          <span className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded text-[10px] font-bold text-zinc-600 dark:text-zinc-400">Go</span>
+                          <span className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded text-[10px] font-bold text-zinc-600 dark:text-zinc-400">CI/CD</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <div className="flex items-center gap-1 md:gap-2">

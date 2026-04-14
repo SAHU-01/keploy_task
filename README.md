@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Keploy Documentation Portal
 
-## Getting Started
+A high-performance documentation and interactive tutorial platform built with Next.js 15, MDX, and Zustand. This portal is designed to provide a seamless onboarding experience through reactive content synchronization and integrated code exploration.
 
-First, run the development server:
+## Core Architecture
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Content Engine
+The portal utilizes a custom MDX engine located in `src/lib/mdx/engine.ts`. Content is structured within `src/content/QUICKSTART`, enabling a modular approach to multi-language and multi-environment documentation. The engine parses frontmatter and raw MDX content, providing a type-safe interface for the application.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### State Management
+Global application state is managed via Zustand in `src/features/keploy-tutorial/store/useTutorialStore.ts`. This store synchronizes the current progress through tutorials, active code snippets, and global UI states (sidebar, theme, search queries).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Reactive Tutorials
+The tutorial system implements an intersection-observer-based progression model. As users scroll through a guide, the `Step` component updates the global state, which in turn:
+- Synchronizes the `CodePane` to show the relevant file and line ranges.
+- Updates the progressive timeline (circles and connecting lines).
+- Manages the active section highlighting.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Key Features
 
-## Learn More
+### Dynamic Search
+A custom-built, full-text search implementation integrated into the `Navbar`. It features:
+- Real-time indexing of the active page content.
+- Visual highlighting of matching sections using a reactive pulse effect.
+- Keyboard shortcut integration (Command + K).
 
-To learn more about Next.js, take a look at the following resources:
+### Multi-File Code Explorer
+The `CodePane` component provides a high-fidelity code viewing experience with:
+- Support for multiple files and syntax highlighting.
+- Integration with MDX `CodeTrigger` components for direct line highlighting.
+- Diff visualization for configuration changes.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Progressive Progress Tracking
+A visual timeline that marks progress through tutorials:
+- Automated state updates based on scroll position.
+- Persistent completion markers for visited sections.
+- Integrated feedback loop ("Up Next" and section-level feedback).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Development
 
-## Deploy on Vercel
+### Prerequisites
+- Node.js (v20 or higher)
+- npm or yarn
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Setup
+1. Install dependencies: `npm install`
+2. Run development server: `npm run dev`
+3. Build for production: `npm run build`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Technical Stack
+- Framework: Next.js 15 (App Router)
+- Language: TypeScript
+- Styling: Tailwind CSS
+- Animations: Framer Motion
+- Content: MDX (next-mdx-remote)
+- State: Zustand
+- Icons: Lucide React

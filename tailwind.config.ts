@@ -24,7 +24,7 @@ export default {
         accent: "rgb(var(--accent) / <alpha-value>)",
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "ui-sans-serif", "system-ui"],
+        sans: ["Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
         mono: ["var(--font-jetbrains-mono)", "ui-monospace", "SFMono-Regular"],
       },
     },

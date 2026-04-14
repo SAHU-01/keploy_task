@@ -1,6 +1,7 @@
 import { getContentBySlug } from "@/lib/mdx/engine";
 import { TutorialHeader } from "@/features/keploy-tutorial/components/TutorialHeader";
 import { CodePane } from "@/features/keploy-tutorial/components/CodePane";
+import { UpNext } from "@/features/keploy-tutorial/components/UpNext";
 import StripeLayout from "@/components/StripeLayout";
 import { serialize } from "next-mdx-remote/serialize";
 import { MdxRenderer } from "@/features/keploy-tutorial/components/MdxRenderer";
@@ -49,6 +50,9 @@ export default async function QuickstartPage({ params, searchParams }: PageProps
         rawContent={content.content}
         title={content.data.title}
       />
+
+      {/* 5. Up Next Section & Feedback */}
+      <UpNext links={content.data.upNext} />
     </StripeLayout>
   );
 }

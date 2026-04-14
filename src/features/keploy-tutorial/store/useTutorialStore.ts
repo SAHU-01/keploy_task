@@ -11,6 +11,7 @@ interface TutorialState {
   isMobileSidebarOpen: boolean;
   rawContent: string;
   title: string;
+  searchQuery: string;
 
   setLanguage: (language: string) => void;
   setEnv: (env: string) => void;
@@ -20,6 +21,7 @@ interface TutorialState {
   toggleSidebar: () => void;
   toggleMobileSidebar: (open?: boolean) => void;
   setRawContent: (content: string, title: string) => void;
+  setSearchQuery: (query: string) => void;
 }
 
 export const useTutorialStore = create<TutorialState>((set) => ({
@@ -33,6 +35,7 @@ export const useTutorialStore = create<TutorialState>((set) => ({
   isMobileSidebarOpen: false,
   rawContent: "",
   title: "",
+  searchQuery: "",
 
   setLanguage: (language) => set({ language }),
   setEnv: (env) => set({ env }),
@@ -45,4 +48,5 @@ export const useTutorialStore = create<TutorialState>((set) => ({
     isMobileSidebarOpen: open !== undefined ? open : !state.isMobileSidebarOpen 
   })),
   setRawContent: (rawContent, title) => set({ rawContent, title }),
+  setSearchQuery: (searchQuery) => set({ searchQuery }),
 }));

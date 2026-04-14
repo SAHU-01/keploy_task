@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useTutorialStore } from "../store/useTutorialStore";
+import { useTutorialStore } from "@/features/tutorial-core/store/use-tutorial-store";
 
 interface StoreInitializerProps {
   files: Record<string, string>;

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useMemo, useState } from "react";
 import { Highlight, themes } from "prism-react-renderer";
-import { useTutorialStore } from "../store/useTutorialStore";
+import { useTutorialStore } from "@/features/tutorial-core/store/use-tutorial-store";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { useTutorialStore } from "../../../store/useTutorialStore";
+import { useTutorialStore } from "@/features/tutorial-core/store/use-tutorial-store";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Copy, Check } from "lucide-react";
@@ -71,10 +71,18 @@ export const Pre = ({ children, ...props }: React.HTMLAttributes<HTMLPreElement>
         return <div key={i} className="px-0">{line}</div>;
       });
     }
+
+    if (Array.isArray(node)) {
+      return node.map((child, i) => <React.Fragment key={i}>{processContent(child)}</React.Fragment>);
+    }
     
     if (React.isValidElement(node)) {
-      const element = node as React.ReactElement<{ children: React.ReactNode }>;
-      if (element.props.children) {
+      // If it's a code element (either string "code" or our Code component), process its children
+      const type = node.type;
+      const isCodeElement = type === "code" || (typeof type === "function" && (type as React.ComponentType).displayName === "Code");
+      
+      if (isCodeElement) {
+        const element = node as React.ReactElement<{ children: React.ReactNode }>;
         return React.cloneElement(element, {
           children: React.Children.map(element.props.children, child => processContent(child))
         });

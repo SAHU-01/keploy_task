@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useTutorialStore } from "../../../store/useTutorialStore";
+import { useTutorialStore } from "@/features/tutorial-core/store/use-tutorial-store";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Check, Sparkles, FileText, FileCode, ChevronRight } from "lucide-react";
@@ -27,7 +27,7 @@ export const HeaderSection = ({ title: propsTitle }: { title: string }) => {
   };
 
   // Generate dynamic breadcrumbs
-  const pathSegments = pathname.split("/").filter(Boolean);
+  const pathSegments = (pathname || "").split("/").filter(Boolean);
   const breadcrumbs = pathSegments.map((segment, index) => {
     const href = `/${pathSegments.slice(0, index + 1).join("/")}`;
     const label = segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ");

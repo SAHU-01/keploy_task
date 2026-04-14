@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Github, Slack, Search, Menu, Loader2, ExternalLink } from "lucide-react";
-import { ThemeToggle } from "./theme-toggle";
+import { ThemeToggle } from "@/features/theme/components/theme-toggle";
 import { useTutorialStore } from "@/features/tutorial-core/store/use-tutorial-store";
 import { useSearch } from "@/features/search/hooks/use-search";
 import { clsx, type ClassValue } from "clsx";

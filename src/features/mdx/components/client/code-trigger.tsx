@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useRef } from "react";
-import { useTutorialStore } from "../../../store/useTutorialStore";
+import { useTutorialStore } from "@/features/tutorial-core/store/use-tutorial-store";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 

@@ -1,6 +1,7 @@
+import React from "react";
 import { getContentBySlug } from "@/lib/mdx/engine";
-import { TutorialHeader } from "@/features/keploy-tutorial/components/TutorialHeader";
-import { UpNext } from "@/features/keploy-tutorial/components/UpNext";
+import { TutorialHeader } from "@/features/tutorial-navigation/components/tutorial-header";
+import { UpNext } from "@/features/tutorial-navigation/components/up-next";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { 
   Step, 
@@ -10,7 +11,6 @@ import {
   Pre, 
   H2, 
   H3,
-  Info,
   Alert,
   Callout,
   Note,
@@ -20,9 +20,10 @@ import {
   H1,
   P,
   Code,
-  Wrapper
-} from "@/features/keploy-tutorial/components/mdx";
-import { StoreInitializer } from "@/features/keploy-tutorial/components/StoreInitializer";
+  Wrapper,
+  Info
+} from "@/features/mdx";
+import { StoreInitializer } from "@/features/tutorial-core/components/store-initializer";
 import { notFound } from "next/navigation";
 
 const mdxComponents = {
@@ -91,11 +92,14 @@ export default async function QuickstartPage({ params, searchParams }: PageProps
       {/* 3. TutorialHeader at the top of the main column */}
       <TutorialHeader />
       
-      {/* 4. Render MDX Content using RSC-compatible MDXRemote */}
+      {/* 4. Render MDX Content */}
       <div className="mt-8 prose prose-zinc dark:prose-invert max-w-none">
         <MDXRemote 
           source={content.content} 
           components={mdxComponents}
+          options={{
+            parseFrontmatter: true,
+          }}
         />
       </div>
 

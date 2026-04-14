@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { useTutorialStore } from "../../../store/useTutorialStore";
+import { useTutorialStore } from "@/features/tutorial-core/store/use-tutorial-store";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -38,7 +38,21 @@ export const Step = ({
     const query = searchQuery.toLowerCase();
     
     if (title.toLowerCase().includes(query)) return true;
-    const childrenString = React.Children.toArray(children).join("").toLowerCase();
+    
+    // Improved children string conversion
+    const extractText = (node: React.ReactNode): string => {
+      if (!node) return "";
+      if (typeof node === "string") return node;
+      if (typeof node === "number") return node.toString();
+      if (Array.isArray(node)) return node.map(extractText).join("");
+      if (React.isValidElement(node)) {
+        const props = node.props as { children?: React.ReactNode };
+        if (props.children) return extractText(props.children);
+      }
+      return "";
+    };
+
+    const childrenString = extractText(children).toLowerCase();
     if (childrenString.includes(query)) return true;
     
     return false;

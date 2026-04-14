@@ -25,10 +25,13 @@ export interface MDXContent {
  * Also reads all other files in the same directory as code files.
  */
 export async function getContentBySlug(slug: string[]): Promise<MDXContent | null> {
+  console.log('getContentBySlug slug:', slug);
   const slugPath = path.join(...slug);
   const fullPath = path.join(BASE_DIR, slugPath);
+  console.log('getContentBySlug fullPath:', fullPath);
   
   const indexPath = path.join(fullPath, '_index.mdx');
+  console.log('getContentBySlug indexPath:', indexPath);
 
   try {
     const stats = await fs.stat(indexPath);
@@ -88,7 +91,8 @@ export async function getContentBySlug(slug: string[]): Promise<MDXContent | nul
 
       return { data, content, files: codeFiles, headers: extractedHeaders };
     }
-  } catch {
+  } catch (error) {
+    console.error('Error in getContentBySlug:', error);
     return getComingSoonFallback();
   }
 

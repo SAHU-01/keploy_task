@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useTutorialStore } from "../../../store/useTutorialStore";
+import { useTutorialStore } from "@/features/tutorial-core/store/use-tutorial-store";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Copy, Check } from "lucide-react";
@@ -30,6 +30,7 @@ export const CodeGroup = ({ children }: { children: React.ReactNode }) => {
       <div className="flex items-center justify-between border-b border-border bg-muted/50">
         <div className="flex overflow-x-auto custom-scrollbar no-scrollbar">
           {childrenArray.map((child, i) => {
+            if (!React.isValidElement(child)) return null;
             const element = child as React.ReactElement<{ label?: string; filename?: string }>;
             return (
               <button
@@ -42,7 +43,7 @@ export const CodeGroup = ({ children }: { children: React.ReactNode }) => {
                     : "border-transparent text-muted-foreground hover:text-foreground"
                 )}
               >
-                {element.props.label || element.props.filename}
+                {element.props.label || element.props.filename || `Tab ${i + 1}`}
               </button>
             );
           })}

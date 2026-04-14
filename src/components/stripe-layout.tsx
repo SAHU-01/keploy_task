@@ -5,10 +5,10 @@ import type { Variants } from "framer-motion";
 import { motion, AnimatePresence } from "framer-motion";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Sidebar } from "./Sidebar";
-import { Navbar } from "./Navbar";
-import { ScrollArea } from "./ui/ScrollArea";
-import { useTutorialStore } from "@/features/keploy-tutorial/store/useTutorialStore";
+import { Sidebar } from "./sidebar";
+import { Navbar } from "./navbar";
+import { ScrollArea } from "./ui/scroll-area";
+import { useTutorialStore } from "@/features/tutorial-core/store/use-tutorial-store";
 import { X } from "lucide-react";
 
 function cn(...inputs: ClassValue[]) {

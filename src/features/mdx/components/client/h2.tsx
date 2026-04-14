@@ -1,10 +1,23 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { useTutorialStore } from "../../../store/useTutorialStore";
+import { useTutorialStore } from "@/features/tutorial-core/store/use-tutorial-store";
 
 export const H2 = ({ children }: { children: React.ReactNode }) => {
-  const id = typeof children === "string" ? children.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-") : undefined;
+  const extractText = (node: React.ReactNode): string => {
+    if (!node) return "";
+    if (typeof node === "string") return node;
+    if (typeof node === "number") return node.toString();
+    if (Array.isArray(node)) return node.map(extractText).join("");
+    if (React.isValidElement(node)) {
+      const props = node.props as { children?: React.ReactNode };
+      if (props.children) return extractText(props.children);
+    }
+    return "";
+  };
+
+  const text = extractText(children);
+  const id = text ? text.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-") : undefined;
   const setActiveSection = useTutorialStore(state => state.setActiveSection);
   const ref = useRef<HTMLHeadingElement>(null);
 

@@ -59,6 +59,14 @@ The tutorial system implements an intersection-observer-based progression model.
 - Updates the progressive timeline (circles and connecting lines).
 - Manages the active section highlighting.
 
+
+
+https://github.com/user-attachments/assets/e7051942-9f3a-4b15-8ac3-b4af396ca994
+
+
+
+
+
 ## Key Features
 
 ### Dynamic Search

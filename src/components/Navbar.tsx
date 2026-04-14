@@ -15,7 +15,9 @@ function cn(...inputs: ClassValue[]) {
 }
 
 export function Navbar() {
-  const { toggleMobileSidebar, setSearchQuery, searchQuery } = useTutorialStore();
+  const toggleMobileSidebar = useTutorialStore(state => state.toggleMobileSidebar);
+  const setSearchQuery = useTutorialStore(state => state.setSearchQuery);
+  const searchQuery = useTutorialStore(state => state.searchQuery);
   const { results, isLoading } = useSearch(searchQuery);
   const [isFocused, setIsFocused] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);

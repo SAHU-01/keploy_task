@@ -1,10 +1,53 @@
 import { getContentBySlug } from "@/lib/mdx/engine";
 import { TutorialHeader } from "@/features/keploy-tutorial/components/TutorialHeader";
 import { UpNext } from "@/features/keploy-tutorial/components/UpNext";
-import { serialize } from "next-mdx-remote/serialize";
-import { MdxRenderer } from "@/features/keploy-tutorial/components/MdxRenderer";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import { 
+  Step, 
+  CodeGroup, 
+  CodeTrigger, 
+  HeaderSection, 
+  Pre, 
+  H2, 
+  H3,
+  Info,
+  Alert,
+  Callout,
+  Note,
+  Prerequisites,
+  Badge,
+  CodeBlock,
+  H1,
+  P,
+  Code,
+  Wrapper
+} from "@/features/keploy-tutorial/components/mdx";
 import { StoreInitializer } from "@/features/keploy-tutorial/components/StoreInitializer";
 import { notFound } from "next/navigation";
+
+const mdxComponents = {
+  // Client Components
+  Step,
+  CodeGroup,
+  CodeTrigger,
+  HeaderSection,
+  Info,
+  pre: Pre,
+  h2: H2,
+  h3: H3,
+
+  // Server Components
+  Alert,
+  Callout,
+  Note,
+  Prerequisites,
+  Badge,
+  CodeBlock,
+  h1: H1,
+  p: P,
+  code: Code,
+  wrapper: Wrapper,
+};
 
 interface PageProps {
   params: Promise<{
@@ -35,9 +78,6 @@ export default async function QuickstartPage({ params, searchParams }: PageProps
     );
   }
 
-  // 2. Serialize MDX on the server for the Client Component
-  const serialized = await serialize(content.content);
-
   return (
     <>
       {/* 0. Initialize store with server data to prevent flickering */}
@@ -51,10 +91,13 @@ export default async function QuickstartPage({ params, searchParams }: PageProps
       {/* 3. TutorialHeader at the top of the main column */}
       <TutorialHeader />
       
-      {/* 4. Pass serialized content to Client-Side MdxRenderer */}
-      <MdxRenderer 
-        serializedSource={serialized} 
-      />
+      {/* 4. Render MDX Content using RSC-compatible MDXRemote */}
+      <div className="mt-8 prose prose-zinc dark:prose-invert max-w-none">
+        <MDXRemote 
+          source={content.content} 
+          components={mdxComponents}
+        />
+      </div>
 
       {/* 5. Up Next Section & Feedback */}
       <UpNext links={content.data.upNext} />

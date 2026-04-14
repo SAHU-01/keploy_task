@@ -40,7 +40,9 @@ export default function StripeLayout({
   code,
   className,
 }: StripeLayoutProps) {
-  const { isSidebarCollapsed, isMobileSidebarOpen, toggleMobileSidebar } = useTutorialStore();
+  const isSidebarCollapsed = useTutorialStore(state => state.isSidebarCollapsed);
+  const isMobileSidebarOpen = useTutorialStore(state => state.isMobileSidebarOpen);
+  const toggleMobileSidebar = useTutorialStore(state => state.toggleMobileSidebar);
 
   return (
     <div className={cn(

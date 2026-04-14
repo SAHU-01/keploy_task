@@ -143,7 +143,7 @@ export function Navbar() {
                     ) : searchQuery ? (
                       <div className="px-3 py-10 text-center">
                         <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-1">No results found</p>
-                        <p className="text-xs text-zinc-500">We couldn't find anything matching "{searchQuery}"</p>
+                        <p className="text-xs text-zinc-500">We couldn&apos;t find anything matching &quot;{searchQuery}&quot;</p>
                       </div>
                     ) : (
                       <div className="flex flex-col gap-1 px-3 py-4">

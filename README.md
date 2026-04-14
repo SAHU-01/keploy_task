@@ -7,23 +7,23 @@ A high-performance documentation and interactive tutorial platform built with Ne
 ```mermaid
 graph TD
     subgraph Server_Side ["Server Side (Next.js App Router)"]
-        MDX[MDX Content Files] --> Engine[MDX Engine /lib/mdx/engine.ts]
-        Engine --> Data[Parsed MDX + Headers + Code Files]
-        Data --> Page[Quickstart Page /app/quickstart/[slug]]
+        MDX["MDX Content Files"] --> Engine["MDX Engine /lib/mdx/engine.ts"]
+        Engine --> Data["Parsed MDX + Headers + Code Files"]
+        Data --> Page["Quickstart Page /app/quickstart/[slug]"]
     end
 
     subgraph Client_Side ["Client Side (React + Zustand)"]
-        Page --> Initializer[StoreInitializer Component]
-        Initializer -- "Synchronous Sync" --> Store[useTutorialStore]
+        Page --> Initializer["StoreInitializer Component"]
+        Initializer -- "Synchronous Sync" --> Store["useTutorialStore"]
         
         subgraph UI_Components ["UI Components"]
-            Store --> Sidebar[Sidebar: Navigation + Headers]
-            Store --> CodePane[CodePane: Multi-file Explorer]
+            Store --> Sidebar["Sidebar: Navigation + Headers"]
+            Store --> CodePane["CodePane: Multi-file Explorer"]
             
             subgraph Content_Area ["Main Content Area"]
-                MdxRenderer[MdxRenderer: MDXRemote]
-                MdxRenderer --> Step[Step Component]
-                MdxRenderer --> CodeBlock[CodeBlock / Pre]
+                MdxRenderer["MdxRenderer: MDXRemote"]
+                MdxRenderer --> Step["Step Component"]
+                MdxRenderer --> CodeBlock["CodeBlock / Pre"]
             end
         end
 

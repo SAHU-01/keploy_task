@@ -6,7 +6,7 @@ interface TutorialState {
   activeStep: number;
   activeCodeSnippet: string | null;
   activeFile: string;
-  activeLineRange: [number, number] | null;
+  activeLineRange: [number, number] | undefined;
   isSidebarCollapsed: boolean;
   isMobileSidebarOpen: boolean;
   rawContent: string;
@@ -38,7 +38,7 @@ export const useTutorialStore = create<TutorialState>((set) => ({
   activeStep: 1,
   activeCodeSnippet: null,
   activeFile: "",
-  activeLineRange: null,
+  activeLineRange: undefined,
   isSidebarCollapsed: false,
   isMobileSidebarOpen: false,
   rawContent: "",
@@ -53,7 +53,7 @@ export const useTutorialStore = create<TutorialState>((set) => ({
   setEnv: (env) => set({ env }),
   setActiveStep: (activeStep) => set({ activeStep }),
   setCode: (activeCodeSnippet) => set({ activeCodeSnippet }),
-  setActiveCode: (activeFile, activeLineRange = null) => 
+  setActiveCode: (activeFile, activeLineRange = undefined) => 
     set({ activeFile, activeLineRange }),
   toggleSidebar: () => set((state) => ({ isSidebarCollapsed: !state.isSidebarCollapsed })),
   toggleMobileSidebar: (open) => set((state) => ({ 

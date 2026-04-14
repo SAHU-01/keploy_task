@@ -21,6 +21,7 @@ export const CodeTrigger = ({ file, lines, children, className }: CodeTriggerPro
   const ref = useRef<HTMLDivElement>(null);
   const setActiveCode = useTutorialStore((state) => state.setActiveCode);
   const [isInView, setIsInView] = React.useState(false);
+  const linesString = JSON.stringify(lines);
   
   useEffect(() => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -43,7 +44,7 @@ export const CodeTrigger = ({ file, lines, children, className }: CodeTriggerPro
     }
 
     return () => observer.disconnect();
-  }, [file, JSON.stringify(lines), setActiveCode]);
+  }, [file, linesString, setActiveCode, lines]);
 
   return (
     <div 

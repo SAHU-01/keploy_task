@@ -24,7 +24,7 @@ interface SearchResult {
   title: string;
   content: string;
   url: string;
-  type: "quickstart" | "doc";
+  type: "quickstart" | "doc" | "page" | "section" | "header";
 }
 
 export async function GET() {

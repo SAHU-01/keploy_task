@@ -275,7 +275,7 @@ function SidebarLink({
     <div className="relative group flex items-start gap-1 mx-1">
       <Link
         href={href}
-        onClick={(e) => {
+        onClick={() => {
           if (hasChildren || active) {
             onToggle?.();
           }

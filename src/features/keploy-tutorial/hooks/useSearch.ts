@@ -65,7 +65,7 @@ export function useSearch(query: string) {
       });
 
       const formattedResults = searchResults.hits.map((hit) => {
-        const doc = hit.document as { title: string; url: string };
+        const doc = (hit.document as unknown) as { title: string; url: string };
         return {
           id: hit.id,
           title: doc.title,

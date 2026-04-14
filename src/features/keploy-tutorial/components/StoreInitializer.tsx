@@ -1,7 +1,6 @@
 "use client";
 
 import { useTutorialStore } from "../store/useTutorialStore";
-import { useRef } from "react";
 
 interface StoreInitializerProps {
   files: Record<string, string>;
@@ -16,9 +15,6 @@ interface StoreInitializerProps {
  * flashes of old content.
  */
 export function StoreInitializer({ files, headers, rawContent, title }: StoreInitializerProps) {
-  const initialized = useRef(false);
-  const lastPath = useRef("");
-  
   // We use the store's internal state to check if we need an update
   const store = useTutorialStore.getState();
 

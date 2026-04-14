@@ -34,7 +34,8 @@ export async function getContentBySlug(slug: string[]): Promise<MDXContent | nul
     const stats = await fs.stat(indexPath);
     if (stats.isFile()) {
       const fileContents = await fs.readFile(indexPath, 'utf8');
-      const { data, content } = matter(fileContents);
+      const { data: rawData, content } = matter(fileContents);
+      const data = rawData as MDXContent["data"];
 
       // Extract headers and steps on the server
       const extractedHeaders: Array<{ id: string; title: string; level: number }> = [];
@@ -98,7 +99,8 @@ async function getComingSoonFallback(): Promise<MDXContent | null> {
   const fallbackPath = path.join(BASE_DIR, 'coming-soon.mdx');
   try {
     const fileContents = await fs.readFile(fallbackPath, 'utf8');
-    const { data, content } = matter(fileContents);
+    const { data: rawData, content } = matter(fileContents);
+    const data = rawData as MDXContent["data"];
     return { data, content, files: {}, headers: [] };
   } catch {
     console.error('Fallback content (coming-soon.mdx) not found in QUICKSTART directory.');

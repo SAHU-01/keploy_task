@@ -120,6 +120,7 @@ const Step = ({
   
   const stepRef = useRef<HTMLDivElement>(null);
   const isActive = activeStep === number;
+  const linesString = JSON.stringify(lines);
 
   const isCompleted = activeStep > number;
   const isSearchMatch = React.useMemo(() => {
@@ -160,7 +161,7 @@ const Step = ({
     }
 
     return () => observer.disconnect();
-  }, [number, setActiveStep, setActiveSection, file, setActiveCode, JSON.stringify(lines)]);
+  }, [number, setActiveStep, setActiveSection, file, setActiveCode, linesString, lines]);
 
   return (
     <div 
@@ -399,11 +400,13 @@ const Pre = ({ children, ...props }: React.HTMLAttributes<HTMLPreElement> & { fi
       });
     }
     
-    if (React.isValidElement(node) && node.props.children) {
+    if (React.isValidElement(node)) {
       const element = node as React.ReactElement<{ children: React.ReactNode }>;
-      return React.cloneElement(element, {
-        children: React.Children.map(element.props.children, child => processContent(child))
-      });
+      if (element.props.children) {
+        return React.cloneElement(element, {
+          children: React.Children.map(element.props.children, child => processContent(child))
+        });
+      }
     }
     
     return node;

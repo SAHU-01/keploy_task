@@ -1,4 +1,3 @@
-/// <reference types="next" />
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";

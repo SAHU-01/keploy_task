@@ -12,6 +12,10 @@ interface TutorialState {
   rawContent: string;
   title: string;
   searchQuery: string;
+  files: Record<string, string>;
+  headers: Array<{ id: string; title: string; level: number }>;
+  activeSection: string | null;
+  expandedSlugs: string[];
 
   setLanguage: (language: string) => void;
   setEnv: (env: string) => void;
@@ -22,6 +26,10 @@ interface TutorialState {
   toggleMobileSidebar: (open?: boolean) => void;
   setRawContent: (content: string, title: string) => void;
   setSearchQuery: (query: string) => void;
+  setFiles: (files: Record<string, string>) => void;
+  setHeaders: (headers: Array<{ id: string; title: string; level: number }>) => void;
+  setActiveSection: (id: string | null) => void;
+  toggleExpandedSlug: (slug: string) => void;
 }
 
 export const useTutorialStore = create<TutorialState>((set) => ({
@@ -36,6 +44,10 @@ export const useTutorialStore = create<TutorialState>((set) => ({
   rawContent: "",
   title: "",
   searchQuery: "",
+  files: {},
+  headers: [],
+  activeSection: null,
+  expandedSlugs: [],
 
   setLanguage: (language) => set({ language }),
   setEnv: (env) => set({ env }),
@@ -49,4 +61,12 @@ export const useTutorialStore = create<TutorialState>((set) => ({
   })),
   setRawContent: (rawContent, title) => set({ rawContent, title }),
   setSearchQuery: (searchQuery) => set({ searchQuery }),
+  setFiles: (files) => set({ files }),
+  setHeaders: (headers) => set({ headers }),
+  setActiveSection: (activeSection) => set({ activeSection }),
+  toggleExpandedSlug: (slug) => set((state) => ({
+    expandedSlugs: state.expandedSlugs.includes(slug)
+      ? state.expandedSlugs.filter((s) => s !== slug)
+      : [...state.expandedSlugs, slug]
+  })),
 }));

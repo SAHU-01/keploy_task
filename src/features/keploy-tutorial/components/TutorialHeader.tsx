@@ -82,7 +82,12 @@ export const TutorialHeader = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const { language, env, setLanguage, setEnv, isSidebarCollapsed } = useTutorialStore();
+  const language = useTutorialStore(state => state.language);
+  const env = useTutorialStore(state => state.env);
+  const setLanguage = useTutorialStore(state => state.setLanguage);
+  const setEnv = useTutorialStore(state => state.setEnv);
+  const isSidebarCollapsed = useTutorialStore(state => state.isSidebarCollapsed);
+  
   const currentQuickstart = searchParams.get("quickstart") || "mux-postgres";
 
   useEffect(() => {

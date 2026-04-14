@@ -19,24 +19,68 @@ async function getAllMdxFiles(dir: string, fileList: string[] = []) {
   return fileList;
 }
 
+interface SearchResult {
+  id: string;
+  title: string;
+  content: string;
+  url: string;
+  type: "quickstart" | "doc";
+}
+
 export async function GET() {
   try {
     const files = await getAllMdxFiles(CONTENT_DIR);
-    const searchData = await Promise.all(
+    const searchData: SearchResult[] = [];
+
+    await Promise.all(
       files.map(async (file) => {
         const content = await fs.readFile(file, "utf8");
         const { data, content: textContent } = matter(content);
         
-        // Relative path for the URL
         let relativePath = path.relative(CONTENT_DIR, file).replace(/\/_index\.mdx$/, "").replace(/\.mdx$/, "");
-        if (relativePath === "") relativePath = "/"; // For root level files if any
+        if (relativePath === "") relativePath = "/";
         
-        return {
+        // Index the page itself
+        searchData.push({
           id: relativePath,
           title: data.title || "Untitled",
-          content: textContent, // Send full content for indexing
+          content: textContent,
           url: `/quickstart/${relativePath}`,
-        };
+          type: 'page'
+        });
+
+        // Index sections (Steps)
+        const stepRegex = /<Step[^>]*number={(\d+)}[^>]*title="([^"]+)"[^>]*>/g;
+        let match;
+        while ((match = stepRegex.exec(textContent)) !== null) {
+          const stepNumber = match[1];
+          const stepTitle = match[2];
+          
+          searchData.push({
+            id: `${relativePath}-step-${stepNumber}`,
+            title: `${data.title} > ${stepTitle}`,
+            content: stepTitle,
+            url: `/quickstart/${relativePath}#step-${stepNumber}`,
+            type: 'section'
+          });
+        }
+
+        // Index Markdown Headers (## and ###)
+        const headerRegex = /^(#{2,3})\s+(.+)$/gm;
+        let headerMatch;
+        while ((headerMatch = headerRegex.exec(textContent)) !== null) {
+          const title = headerMatch[2].trim();
+          // Generate a slug-like ID for the header
+          const headerId = title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+          
+          searchData.push({
+            id: `${relativePath}-header-${headerId}`,
+            title: `${data.title} > ${title}`,
+            content: title,
+            url: `/quickstart/${relativePath}#${headerId}`,
+            type: 'header'
+          });
+        }
       })
     );
 

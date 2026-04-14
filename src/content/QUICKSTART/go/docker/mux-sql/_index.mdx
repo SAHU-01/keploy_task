@@ -30,17 +30,19 @@ Explore how Keploy captures binary Postgres traffic and generates automated test
 </Prerequisites>
 
 <Step number={1} title="Clone the Sample App">
-  Clone the repository and install dependencies to get started with the Mux-SQL sample.
+  <CodeTrigger file="main.go">
+    Clone the repository and install dependencies to get started with the Mux-SQL sample.
 
-  <CodeGroup>
-    <CodeBlock label="Terminal" filename="terminal">
-    ```bash
-    git clone https://github.com/keploy/samples-go.git
-    cd samples-go/mux-sql
-    go mod download
-    ```
-    </CodeBlock>
-  </CodeGroup>
+    <CodeGroup>
+      <CodeBlock label="Terminal" filename="terminal">
+      ```bash
+      git clone https://github.com/keploy/samples-go.git
+      cd samples-go/mux-sql
+      go mod download
+      ```
+      </CodeBlock>
+    </CodeGroup>
+  </CodeTrigger>
 </Step>
 
 <Step number={2} title="Configure for Docker">
@@ -59,52 +61,58 @@ Explore how Keploy captures binary Postgres traffic and generates automated test
   </CodeGroup>
 </Step>
 
-<Step number={3} title="Lights, Camera, Record!" file="test-1.yml">
-  ### Infrastructure Readiness
-  Once your containers are healthy, you should see the services networked correctly in your terminal.
-  
-  ![Service Orchestration](/assets/quickstart/go/docker/mux-sql/service-orchestration.jpeg)
+<Step number={3} title="Lights, Camera, Record!">
+  <CodeTrigger file="test-1.yml">
+    ### Infrastructure Readiness
+    Once your containers are healthy, you should see the services networked correctly in your terminal.
+    
+    ![Service Orchestration](/assets/quickstart/go/docker/mux-sql/service-orchestration.jpeg)
 
-  Start Keploy in record mode. Use the `-c` flag for your run command and `--container-name` to tell Keploy which container to intercept.
+    Start Keploy in record mode. Use the `-c` flag for your run command and `--container-name` to tell Keploy which container to intercept.
 
-  ```bash
-  keploy record -c "docker compose up" --container-name "muxSqlApp" --build-delay 50
-  ```
+    ```bash
+    keploy record -c "docker compose up" --container-name "muxSqlApp" --build-delay 50
+    ```
+  </CodeTrigger>
 </Step>
 
-<Step number={4} title="Generate Test Cases" file="test-1.yml">
-  Open a new terminal and make an API call. Keploy will capture the request and the database response.
+<Step number={4} title="Generate Test Cases">
+  <CodeTrigger file="mock.yaml">
+    Open a new terminal and make an API call. Keploy will capture the request and the database response.
 
-  <CodeGroup>
-    <CodeBlock label="Terminal" filename="terminal">
-    ```bash
-    curl --request POST \
-      --url http://localhost:8010/product \
-      --header 'content-type: application/json' \
-      --data '{
-        "name":"Bubbles",
-        "price": 123
-      }'
+    <CodeGroup>
+      <CodeBlock label="Terminal" filename="terminal">
+      ```bash
+      curl --request POST \
+        --url http://localhost:8010/product \
+        --header 'content-type: application/json' \
+        --data '{
+          "name":"Bubbles",
+          "price": 123
+        }'
+      ```
+      </CodeBlock>
+    </CodeGroup>
+
+    You should receive a response like this:
+    ```json
+    {
+      "id": 1,
+      "name": "Bubbles",
+      "price": 123
+    }
     ```
-    </CodeBlock>
-  </CodeGroup>
 
-  You should receive a response like this:
-  ```json
-  {
-    "id": 1,
-    "name": "Bubbles",
-    "price": 123
-  }
-  ```
-
-  Woohoo! With a simple API call, you've crafted a test case with a mock! Dive into the Keploy directory and feast your eyes on the newly minted test-1.yml and mocks.yml.
+    Woohoo! With a simple API call, you've crafted a test case with a mock! Dive into the Keploy directory and feast your eyes on the newly minted test-1.yml and mocks.yml.
+  </CodeTrigger>
 
   ### The Generated Artifacts
 
   <Note>
-    **1. The Test Case**
-    Keploy has now generated a new test file test-1.yml. This file contains the captured request and the expected response, including the exact body and status codes.
+    <CodeTrigger file="test-1.yml">
+      **1. The Test Case**
+      Keploy has now generated a new test file test-1.yml. This file contains the captured request and the expected response, including the exact body and status codes.
+    </CodeTrigger>
 
     **2. The Mocks**
     <CodeTrigger file="mock.yaml">
@@ -133,15 +141,19 @@ Explore how Keploy captures binary Postgres traffic and generates automated test
 </Step>
 
 <Step number={5} title="Run the Tests">
-  After stopping the record terminal, execute the test suite. We add a `--delay` to give Postgres time to breathe before the tests start.
+  <CodeTrigger file="test-2.yml">
+    After stopping the record terminal, execute the test suite. We add a `--delay` to give Postgres time to breathe before the tests start.
 
-  ```bash
-  keploy test -c "docker compose up" --container-name "muxSqlApp" --delay 10
-  ```
+    ```bash
+    keploy test -c "docker compose up" --container-name "muxSqlApp" --delay 10
+    ```
+  </CodeTrigger>
 
-  A successful run will output the test report summary in your terminal:
+  <CodeTrigger file="test-2.yml">
+    A successful run will output the test report summary in your terminal:
 
-  ![Keploy Success Console](/assets/quickstart/go/docker/mux-sql/keploy-success-console.jpeg)
+    ![Keploy Success Console](/assets/quickstart/go/docker/mux-sql/keploy-success-console.jpeg)
+  </CodeTrigger>
 </Step>
 
 ## Wrapping it up

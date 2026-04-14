@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { create, insert, search, type AnyOrama } from "@orama/orama";
 
 interface SearchResult {
@@ -64,11 +64,14 @@ export function useSearch(query: string) {
         limit: 5,
       });
 
-      const formattedResults = searchResults.hits.map((hit) => ({
-        id: hit.id,
-        title: (hit.document as any).title,
-        url: (hit.document as any).url,
-      }));
+      const formattedResults = searchResults.hits.map((hit) => {
+        const doc = hit.document as { title: string; url: string };
+        return {
+          id: hit.id,
+          title: doc.title,
+          url: doc.url,
+        };
+      });
 
       setResults(formattedResults);
     }

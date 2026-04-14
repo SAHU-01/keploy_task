@@ -6,11 +6,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Sidebar } from "./Sidebar";
-import { ThemeToggle } from "./ThemeToggle";
 import { Navbar } from "./Navbar";
 import { ScrollArea } from "./ui/ScrollArea";
 import { useTutorialStore } from "@/features/keploy-tutorial/store/useTutorialStore";
-import { Menu, X } from "lucide-react";
+import { X } from "lucide-react";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

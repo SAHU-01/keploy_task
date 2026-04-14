@@ -1,10 +1,9 @@
 import { getContentBySlug } from "@/lib/mdx/engine";
 import { TutorialHeader } from "@/features/keploy-tutorial/components/TutorialHeader";
-import { CodePane } from "@/features/keploy-tutorial/components/CodePane";
 import { UpNext } from "@/features/keploy-tutorial/components/UpNext";
-import StripeLayout from "@/components/StripeLayout";
 import { serialize } from "next-mdx-remote/serialize";
 import { MdxRenderer } from "@/features/keploy-tutorial/components/MdxRenderer";
+import { StoreInitializer } from "@/features/keploy-tutorial/components/StoreInitializer";
 import { notFound } from "next/navigation";
 
 interface PageProps {
@@ -20,7 +19,7 @@ export default async function QuickstartPage({ params, searchParams }: PageProps
   const { slug } = await params;
   const { format } = await searchParams;
   
-  // 1. Fetch MDX content using our engine
+  // 1. Fetch MDX content using our engine (now includes headers)
   const content = await getContentBySlug(slug);
 
   if (!content) {
@@ -40,19 +39,25 @@ export default async function QuickstartPage({ params, searchParams }: PageProps
   const serialized = await serialize(content.content);
 
   return (
-    <StripeLayout code={<CodePane />}>
+    <>
+      {/* 0. Initialize store with server data to prevent flickering */}
+      <StoreInitializer 
+        rawContent={content.content}
+        title={content.data.title}
+        files={content.files}
+        headers={content.headers}
+      />
+
       {/* 3. TutorialHeader at the top of the main column */}
       <TutorialHeader />
       
       {/* 4. Pass serialized content to Client-Side MdxRenderer */}
       <MdxRenderer 
         serializedSource={serialized} 
-        rawContent={content.content}
-        title={content.data.title}
       />
 
       {/* 5. Up Next Section & Feedback */}
       <UpNext links={content.data.upNext} />
-    </StripeLayout>
+    </>
   );
 }

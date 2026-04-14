@@ -18,6 +18,41 @@ export function Navbar() {
   const { toggleMobileSidebar, setSearchQuery, searchQuery } = useTutorialStore();
   const { results, isLoading } = useSearch(searchQuery);
   const [isFocused, setIsFocused] = React.useState(false);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  // Handle Command+K shortcut
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const handleResultClick = (url: string) => {
+    setSearchQuery("");
+    setIsFocused(false);
+    
+    if (url.includes("#")) {
+      const [path, hash] = url.split("#");
+      const currentPath = window.location.pathname;
+      
+      if (currentPath === path) {
+        const element = document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+          
+          if (hash.startsWith("step-")) {
+            const stepNum = parseInt(hash.replace("step-", ""));
+            useTutorialStore.getState().setActiveStep(stepNum);
+          }
+        }
+      }
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
@@ -53,6 +88,7 @@ export function Navbar() {
                 <Search className="h-4 w-4 group-hover:text-zinc-500 dark:group-hover:text-zinc-300 transition-colors" />
               )}
               <input 
+                ref={inputRef}
                 type="text"
                 placeholder="Search"
                 value={searchQuery}
@@ -94,6 +130,7 @@ export function Navbar() {
                           <Link
                             key={result.id}
                             href={result.url}
+                            onClick={() => handleResultClick(result.url)}
                             className="flex items-center justify-between px-3 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all group/item"
                           >
                             <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover/item:text-accent transition-colors truncate">

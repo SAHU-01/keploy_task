@@ -3,13 +3,13 @@ import { getContentBySlug } from "@/lib/mdx/engine";
 import { TutorialHeader } from "@/features/tutorial-navigation/components/tutorial-header";
 import { UpNext } from "@/features/tutorial-navigation/components/up-next";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { 
-  Step, 
-  CodeGroup, 
-  CodeTrigger, 
-  HeaderSection, 
-  Pre, 
-  H2, 
+import {
+  Step,
+  CodeGroup,
+  CodeTrigger,
+  HeaderSection,
+  Pre,
+  H2,
   H3,
   Alert,
   Callout,
@@ -21,7 +21,8 @@ import {
   P,
   Code,
   Wrapper,
-  Info
+  Info,
+  Celebrate
 } from "@/features/mdx";
 import { StoreInitializer } from "@/features/tutorial-core/components/store-initializer";
 import { notFound } from "next/navigation";
@@ -32,6 +33,7 @@ const mdxComponents = {
   CodeGroup,
   CodeTrigger,
   HeaderSection,
+  Celebrate,
   Info,
   pre: Pre,
   h2: H2,
@@ -54,29 +56,16 @@ interface PageProps {
   params: Promise<{
     slug: string[];
   }>;
-  searchParams: Promise<{
-    format?: string;
-  }>;
 }
 
-export default async function QuickstartPage({ params, searchParams }: PageProps) {
+export default async function QuickstartPage({ params }: PageProps) {
   const { slug } = await params;
-  const { format } = await searchParams;
-  
+
   // 1. Fetch MDX content using our engine (now includes headers)
   const content = await getContentBySlug(slug);
 
   if (!content) {
     notFound();
-  }
-
-  // Handle raw format request
-  if (format === "raw") {
-    return (
-      <pre className="p-8 font-mono text-sm whitespace-pre-wrap bg-background text-foreground">
-        {content.content}
-      </pre>
-    );
   }
 
   return (

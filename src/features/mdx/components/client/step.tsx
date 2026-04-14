@@ -102,12 +102,18 @@ export const Step = ({
 
       <div className="flex flex-col items-center shrink-0 w-10 overflow-visible">
         <div className={cn(
-          "w-9 h-9 rounded-full border-2 flex items-center justify-center font-bold text-sm z-10 transition-colors duration-300",
-          (isActive || isCompleted)
-            ? "border-[#FF914D] bg-[#FF914D] text-white shadow-[0_0_20px_rgba(255,145,77,0.4)]" 
-            : "border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-600 bg-background group-hover:border-zinc-300 dark:group-hover:border-zinc-700"
+          "w-9 h-9 rounded-full border-2 flex items-center justify-center font-bold text-sm z-10 transition-all duration-300",
+          isCompleted
+            ? "border-[#FF914D] bg-[#FF914D] text-white shadow-[0_0_12px_rgba(255,145,77,0.25)]"
+            : isActive
+              ? "border-[#FF914D] bg-[#FF914D] text-white shadow-[0_0_20px_rgba(255,145,77,0.4)]"
+              : "border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-600 bg-background group-hover:border-zinc-300 dark:group-hover:border-zinc-700"
         )}>
-          {number}
+          {isCompleted ? (
+            <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3.5 8.5 6.5 11.5 12.5 5.5" />
+            </svg>
+          ) : number}
         </div>
         <div className={cn(
           "w-[2px] h-full absolute top-9 group-last:hidden transition-colors duration-300",

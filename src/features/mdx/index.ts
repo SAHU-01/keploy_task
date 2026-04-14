@@ -5,6 +5,7 @@ export * from "./components/client/pre";
 export * from "./components/client/h2";
 export * from "./components/client/h3";
 export * from "./components/client/code-trigger";
+export * from "./components/client/celebrate";
 
 export * from "./components/server/alert";
 export * from "./components/server/callout";

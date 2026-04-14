@@ -13,12 +13,16 @@ upNext:
     description: "Analyze exactly how much Go code your recorded tests are actually hitting."
   - title: "CI/CD Integration"
     href: "https://keploy.io/docs/running-keploy/api-testing-cicd/"
-    description: "You can’t automate what you haven't recorded. Port your flags to GitHub Actions."
+    description: "You can't automate what you haven't recorded. Port your flags to GitHub Actions."
 ---
 
 <HeaderSection title="Mux + Postgres Quickstart" />
 
 Explore how Keploy captures binary Postgres traffic and generates automated tests for a Product Catalog app.
+
+<Callout type="info">
+  **Why Keploy?** Tired of writing `httptest` boilerplate and wiring up `sqlmock` for every handler? Keploy intercepts real API + database traffic and turns it into test cases automatically. Zero test code, zero fake data.
+</Callout>
 
 <Prerequisites>
   Before diving into the integration, ensure your environment is set up for traffic interception:
@@ -47,7 +51,7 @@ Explore how Keploy captures binary Postgres traffic and generates automated test
 
 <Step number={2} title="Configure for Docker">
   <CodeTrigger file="main.go" lines={[17, 22]}>
-    Open `main.go`. We must update the database host from `localhost` to `postgres` so the app can find the database container inside the Docker network.
+    Open `main.go`. Update the database host from `localhost` to `postgres` so the app can find the database container inside the Docker network.
   </CodeTrigger>
 
   <CodeGroup>
@@ -65,10 +69,14 @@ Explore how Keploy captures binary Postgres traffic and generates automated test
   <CodeTrigger file="test-1.yml">
     ### Infrastructure Readiness
     Once your containers are healthy, you should see the services networked correctly in your terminal.
-    
+
     ![Service Orchestration](/assets/quickstart/go/docker/mux-sql/service-orchestration.jpeg)
 
-    Start Keploy in record mode. Use the `-c` flag for your run command and `--container-name` to tell Keploy which container to intercept.
+    <Callout type="info">
+      **What's happening?** Record mode uses eBPF to intercept HTTP requests *and* Postgres queries at the network level. No SDK or code changes needed in your Go app.
+    </Callout>
+
+    Start Keploy in record mode. `-c` sets your run command, `--container-name` tells Keploy which container to watch.
 
     ```bash
     keploy record -c "docker compose up" --container-name "muxSqlApp" --build-delay 50
@@ -78,7 +86,9 @@ Explore how Keploy captures binary Postgres traffic and generates automated test
 
 <Step number={4} title="Generate Test Cases">
   <CodeTrigger file="mock.yaml">
-    Open a new terminal and make an API call. Keploy will capture the request and the database response.
+    Just use your API normally. Keploy captures each call as a test case *and* records the Postgres traffic as a mock.
+
+    Open a new terminal and hit the API:
 
     <CodeGroup>
       <CodeBlock label="Terminal" filename="terminal">
@@ -103,7 +113,9 @@ Explore how Keploy captures binary Postgres traffic and generates automated test
     }
     ```
 
-    Woohoo! With a simple API call, you've crafted a test case with a mock! Dive into the Keploy directory and feast your eyes on the newly minted test-1.yml and mocks.yml.
+    <Callout type="tip">
+      **One `curl` = one test case + one DB mock.** Compare that to writing a `TestCreateProduct` func, setting up `sqlmock`, and asserting JSON by hand. Keploy did all of that from real traffic.
+    </Callout>
   </CodeTrigger>
 
   ### The Generated Artifacts
@@ -142,7 +154,11 @@ Explore how Keploy captures binary Postgres traffic and generates automated test
 
 <Step number={5} title="Run the Tests">
   <CodeTrigger file="test-2.yml">
-    After stopping the record terminal, execute the test suite. We add a `--delay` to give Postgres time to breathe before the tests start.
+    <Callout type="info">
+      **What's happening?** Keploy replays recorded requests and swaps in captured DB mocks. No live Postgres needed. Tests are fully deterministic across local, CI, and teammate machines.
+    </Callout>
+
+    Stop the record terminal, then run the test suite. The `--delay` gives Postgres time to initialize.
 
     ```bash
     keploy test -c "docker compose up" --container-name "muxSqlApp" --delay 10
@@ -156,11 +172,27 @@ Explore how Keploy captures binary Postgres traffic and generates automated test
   </CodeTrigger>
 </Step>
 
-## Wrapping it up
+## What you just built
 
-Congrats on the journey so far! You've seen Keploy's power, flexed your coding muscles, and had a bit of fun too! Now, go out there and keep exploring, innovating, and creating! Remember, with the right tools and a sprinkle of fun, anything's possible.
+<Celebrate>
+  You went from zero to a full integration suite without writing a single test function or wiring up mock layers. All from real traffic!
+</Celebrate>
 
-Happy coding!
+<Note>
+  **Keploy under the hood:**
+
+  **Intercepted** HTTP + Postgres traffic via eBPF
+
+  **Generated** test cases as version-controllable YAML
+
+  **Mocked** real DB responses for deterministic replay
+
+  **Validated** responses match the original recordings
+</Note>
+
+<Callout type="tip">
+  **Next up:** re-record traffic as your API evolves, or edit the YAML files directly to cover edge cases.
+</Callout>
 
 ## Troubleshooting
 

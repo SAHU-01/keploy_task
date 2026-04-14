@@ -21,9 +21,8 @@ export const HeaderSection = ({ title: propsTitle }: { title: string }) => {
   };
 
   const handleViewAsMarkdown = () => {
-    const url = new URL(window.location.href);
-    url.searchParams.set("format", "raw");
-    window.open(url.toString(), "_blank");
+    const slug = pathname.replace(/^\/quickstart\//, "");
+    window.open(`/api/quickstart/raw?slug=${encodeURIComponent(slug)}`, "_blank");
   };
 
   // Generate dynamic breadcrumbs

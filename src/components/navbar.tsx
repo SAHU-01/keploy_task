@@ -68,12 +68,12 @@ export function Navbar() {
           </button>
           
           <Link href="/" className="flex items-center gap-2.5 group">
-            <motion.div 
-              whileHover={{ rotate: 5, scale: 1.05 }}
-              className="w-7 h-7 rounded bg-[#FF914D] flex items-center justify-center shadow-lg shadow-orange-500/20"
-            >
-              <div className="w-3.5 h-3.5 rounded-full border-2 border-white/20" />
-            </motion.div>
+            <motion.img
+              src="/keploy.png"
+              alt="Keploy"
+              whileHover={{ rotate: 5, scale: 1.1 }}
+              className="w-7 h-7 object-contain"
+            />
             <span className="font-bold text-lg tracking-tight text-foreground group-hover:text-[#FF914D] transition-colors hidden sm:inline-block">
               Keploy <span className="text-zinc-500 font-medium ml-1 text-sm">DOCS</span>
             </span>

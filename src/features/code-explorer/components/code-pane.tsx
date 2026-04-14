@@ -3,10 +3,11 @@
 import React, { useEffect, useRef, useMemo, useState } from "react";
 import { Highlight, themes } from "prism-react-renderer";
 import { useTutorialStore } from "@/features/tutorial-core/store/use-tutorial-store";
+import { useTheme } from "next-themes";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { 
-  FileCode, FileText, FileJson, Copy, Check, 
+import {
+  FileCode, FileText, FileJson, Copy, Check,
   ChevronRight, Box, TestTube, Database
 } from "lucide-react";
 
@@ -30,7 +31,10 @@ export const CodePane = () => {
   const activeCodeSnippet = useTutorialStore(state => state.activeCodeSnippet);
   const files = useTutorialStore(state => state.files);
   const setActiveCode = useTutorialStore(state => state.setActiveCode);
-  
+  const { resolvedTheme } = useTheme();
+
+  const isDark = resolvedTheme === "dark";
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const activeLineRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
@@ -64,25 +68,42 @@ export const CodePane = () => {
     }
   }, [activeLineRange, activeFile]);
 
+  const highlightTheme = isDark ? themes.vsDark : themes.vsLight;
+
   return (
-    <div className="h-full flex flex-col bg-[#0A0A0A] overflow-hidden group/pane font-sans">
+    <div className={cn(
+      "h-full flex flex-col overflow-hidden group/pane font-sans",
+      isDark ? "bg-[#0A0A0A]" : "bg-white"
+    )}>
       {/* Tab-based Header */}
-      <div className="flex flex-col border-b border-zinc-800 bg-[#111]">
+      <div className={cn(
+        "flex flex-col border-b",
+        isDark ? "border-zinc-800 bg-[#111]" : "border-zinc-200 bg-zinc-50"
+      )}>
         {/* Workspace info */}
-        <div className="flex items-center justify-between px-4 py-1.5 border-b border-zinc-800/50">
-          <div className="flex items-center gap-2 text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
+        <div className={cn(
+          "flex items-center justify-between px-4 py-1.5 border-b",
+          isDark ? "border-zinc-800/50" : "border-zinc-200/50"
+        )}>
+          <div className={cn(
+            "flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest",
+            isDark ? "text-zinc-500" : "text-zinc-400"
+          )}>
             <Box className="w-3 h-3" />
             Workspace
             {currentFile && (
               <>
                 <ChevronRight className="w-2.5 h-2.5" />
-                <span className="text-zinc-300">{currentFile}</span>
+                <span className={isDark ? "text-zinc-300" : "text-zinc-700"}>{currentFile}</span>
               </>
             )}
           </div>
           <button
             onClick={handleCopy}
-            className="p-1 rounded-md text-zinc-500 hover:text-[#FF914D] hover:bg-zinc-800 transition-all opacity-0 group-hover/pane:opacity-100"
+            className={cn(
+              "p-1 rounded-md transition-all opacity-0 group-hover/pane:opacity-100 hover:text-[#FF914D]",
+              isDark ? "text-zinc-500 hover:bg-zinc-800" : "text-zinc-400 hover:bg-zinc-100"
+            )}
             title="Copy code"
           >
             {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
@@ -90,16 +111,27 @@ export const CodePane = () => {
         </div>
 
         {/* File Tabs */}
-        <div className="flex overflow-x-auto no-scrollbar bg-[#0D0D0D]">
+        <div className={cn(
+          "flex overflow-x-auto no-scrollbar",
+          isDark ? "bg-[#0D0D0D]" : "bg-zinc-100/50"
+        )}>
           {fileList.map((f) => (
             <button
               key={f}
               onClick={() => setActiveCode(f)}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 text-xs transition-all border-r border-zinc-800 min-w-fit relative",
-                currentFile === f 
-                  ? "bg-[#0A0A0A] text-orange-400 font-bold" 
-                  : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"
+                "flex items-center gap-2 px-4 py-2 text-xs transition-all border-r min-w-fit relative",
+                isDark ? "border-zinc-800" : "border-zinc-200",
+                currentFile === f
+                  ? cn(
+                      "text-orange-500 font-bold",
+                      isDark ? "bg-[#0A0A0A]" : "bg-white"
+                    )
+                  : cn(
+                      isDark
+                        ? "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"
+                        : "text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100"
+                    )
               )}
             >
               {currentFile === f && (
@@ -110,7 +142,10 @@ export const CodePane = () => {
             </button>
           ))}
           {fileList.length === 0 && activeCodeSnippet && (
-             <div className="flex items-center gap-2 px-4 py-2 text-xs text-orange-400 font-bold bg-[#0A0A0A] border-r border-zinc-800 relative">
+             <div className={cn(
+               "flex items-center gap-2 px-4 py-2 text-xs text-orange-400 font-bold border-r relative",
+               isDark ? "bg-[#0A0A0A] border-zinc-800" : "bg-white border-zinc-200"
+             )}>
                <div className="absolute top-0 left-0 right-0 h-[2px] bg-orange-500" />
                <FileCode className="w-3.5 h-3.5" />
                Snippet
@@ -121,20 +156,29 @@ export const CodePane = () => {
 
       <div className="flex-1 flex overflow-hidden">
         {/* Code Content Area */}
-        <div 
+        <div
           ref={scrollContainerRef}
-          className="flex-1 overflow-x-hidden overflow-y-auto custom-scrollbar bg-[#0A0A0A]"
+          className={cn(
+            "flex-1 overflow-x-hidden overflow-y-auto custom-scrollbar",
+            isDark ? "bg-[#0A0A0A]" : "bg-white"
+          )}
         >
           {fileList.length === 0 && !activeCodeSnippet ? (
-            <div className="flex flex-col items-center justify-center h-full text-zinc-600 gap-4 p-8 text-center">
-              <div className="w-12 h-12 rounded-2xl border-2 border-dashed border-zinc-800 flex items-center justify-center">
+            <div className={cn(
+              "flex flex-col items-center justify-center h-full gap-4 p-8 text-center",
+              isDark ? "text-zinc-600" : "text-zinc-400"
+            )}>
+              <div className={cn(
+                "w-12 h-12 rounded-2xl border-2 border-dashed flex items-center justify-center",
+                isDark ? "border-zinc-800" : "border-zinc-200"
+              )}>
                 <FileCode className="w-6 h-6 opacity-20" />
               </div>
               <p className="text-sm font-medium">Select a step to view code snippets</p>
             </div>
           ) : (
             <Highlight
-              theme={themes.vsDark}
+              theme={highlightTheme}
               code={code}
               language={language}
             >
@@ -145,9 +189,9 @@ export const CodePane = () => {
                     const isActive = activeLineRange && currentFile === activeFile
                       ? lineNumber >= activeLineRange[0] && lineNumber <= activeLineRange[1]
                       : false;
-                    
+
                     const isFirstActiveLine = activeLineRange && lineNumber === activeLineRange[0];
-                    
+
                     // Detect diff lines
                     const lineText = line.map(t => t.content).join("");
                     const isRemoval = lineText.startsWith("-");
@@ -165,7 +209,10 @@ export const CodePane = () => {
                           isAddition && "bg-green-500/15 border-green-500 diff-add"
                         )}
                       >
-                        <span className="select-none pr-6 text-right text-zinc-700 w-12 shrink-0">
+                        <span className={cn(
+                          "select-none pr-6 text-right w-12 shrink-0",
+                          isDark ? "text-zinc-700" : "text-zinc-300"
+                        )}>
                           {lineNumber}
                         </span>
                         <span className="whitespace-pre-wrap break-all flex items-start">

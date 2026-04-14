@@ -98,3 +98,9 @@ A visual timeline that marks progress through tutorials:
 - Content: MDX (next-mdx-remote)
 - State: Zustand
 - Icons: Lucide React
+
+## Future Scope
+
+- **Enhanced Progression Tracking**: Expand the "Yes/No" mapping and user feedback loops to provide more granular tracking of user success across complex multi-step tutorials.
+- **Extended Content Support**: Support for complex MDX components like interactive tables, comparative side-by-side blocks, and advanced callouts to cover broader documentation needs.
+- **Interactive API Previews**: Enable live preview functionality for certain API calls directly within the tutorial to allow real-time experimentation without leaving the documentation.
